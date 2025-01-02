@@ -1,66 +1,161 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Serverless Demo Application 🖥️⚡  
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Welcome to the **Serverless Demo Application**! This Laravel application demonstrates how to deploy a web application on **AWS Lambda** using the **Bref** package and **Serverless Framework**. Perfect for exploring serverless architecture with Laravel! 🌐💡  
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features ✨  
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Serverless Laravel:** Deploy Laravel effortlessly on AWS Lambda using the Bref package.  
+- **AWS SQS Integration:** Queue job handling using AWS SQS.  
+- **Simple and Scalable:** Focused setup to demonstrate serverless architecture.  
+- **Log Insights:** Logs an entry every time the `/` route is hit.  
+- **Event-Driven:** Dispatches a queued job to process events efficiently.  
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Prerequisites 📋  
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Make sure you have the following installed before getting started:  
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- PHP 8.1+  
+- Composer  
+- Node.js & NPM (node version must be >= 18)
+- AWS CLI (configured with credentials)  
+- Serverless Framework (`npm install -g serverless`)  
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Getting Started 🛠️  
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1️⃣ Clone the Repository  
 
-### Premium Partners
+```bash
+git clone https://github.com/yourusername/serverless-demo-application.git
+cd serverless-demo-application
+```
+### 2️⃣ Install Dependencies
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Run the following command to install all the required PHP and Node.js dependencies:
 
-## Contributing
+```bash
+composer install
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 3️⃣ Configure Your Environment
 
-## Code of Conduct
+Create a `.env` file in the project root:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+cp .env.example .env
+```
 
-## Security Vulnerabilities
+## 4️⃣ Serverless Configuration 📝
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The serverless configuration is defined in the `serverless.yml` file. Key settings include:
 
-## License
+- **Service Name**: `serverless-demo-application`
+- **Provider Region**: `us-east-1`
+- **Excluded Files**: Unnecessary files are excluded for optimized deployment.
+- **Handler**: `public/index.php` serves as the entry point.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Here’s an overview of the configuration file:
+
+```yaml
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: simform2388
+service: serverless-demo-application
+
+provider:
+    name: aws
+    # The AWS region in which to deploy (us-east-1 is the default)
+    region: us-east-1
+    # Environment variables
+    environment:
+        APP_ENV: production # Or use ${sls:stage} if you want the environment to match the stage
+        SESSION_DRIVER: cookie # Change to database if you have set up a database
+
+package:
+    # Files and directories to exclude from deployment
+    patterns:
+        - '!node_modules/**'
+        - '!public/storage'
+        - '!resources/assets/**'
+        - '!storage/**'
+        - '!tests/**'
+        - '!database/*.sqlite'
+
+functions:
+
+    # This function runs the Laravel website/API
+    web:
+        handler: public/index.php
+        runtime: php81-fpm
+        timeout: 28 # in seconds (API Gateway has a timeout of 29 seconds)
+        events:
+            - httpApi: '*'
+
+plugins:
+    # We need to include the Bref plugin
+    - ./vendor/bref/bref
+```
+
+## 5️⃣ Deploy the Application to AWS Lambda 🌍
+
+Now, you're ready to deploy the application to AWS Lambda! Run the following command:
+
+```bash
+serverless deploy
+```
+
+Once the deployment is complete, you’ll receive a URL from AWS API Gateway that you can use to access the application.
+
+```bash
+https://your-api-gateway-url.amazonaws.com
+```
+
+## 6️⃣ Routes and Logic 🚦
+
+### / Route
+
+When the `/` route is accessed, the following actions occur:
+
+- A log message is created: "I was inside the serverless architecture".
+- A background job is dispatched using AWS SQS to handle queued tasks.
+
+The route looks like this:
+
+```php
+Route::get('/', function () {
+    logger()->info('I was inside the serverless architecture');
+    ProcessTrasactionJob::dispatch();  // Dispatch a job via AWS SQS
+    return view('welcome');
+});
+```
+
+## 7️⃣ AWS SQS Integration 📬
+The application utilizes AWS SQS for handling background jobs. Here's how you can configure it:
+
+Create an SQS queue in the AWS Console.
+Add the SQS queue URL and necessary credentials to your `.env` file.
+
+## 8️⃣ Running Locally 🚀
+
+You can also run the application locally to test its functionality:
+
+```bash
+php artisan serve
+```
+Then access the application at:
+```bash
+http://localhost:8000
+```
+
+## 9️⃣ Logs and Monitoring 📈
+
+Use the following command to view the logs from AWS Lambda:
+
+```bash
+serverless logs -f web
+```
